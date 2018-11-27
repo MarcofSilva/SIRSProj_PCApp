@@ -16,8 +16,27 @@ public class CryptoKey_Login {
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Manager.getInstance().registerUser(usernameField.getName(), new String(passwordField.getPassword()));
-                frame.setContentPane(new Cryptokey_Home().getPanel());
+                int login = Manager.getInstance().userCheck(usernameField.getText(), new String(passwordField.getPassword()));
+                System.out.println(login);
+                if(login == 1){ //logged in
+                    CryptoKey_TOTP totpScreen = new CryptoKey_TOTP(frame);
+                    frame.setContentPane(totpScreen.getPanel());
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    frame.pack();
+                    frame.setVisible(true);
+                }
+                else if(login == 0){ //registered & logged in
+                    CryptoKey_QRCode qrcodeScreen = new CryptoKey_QRCode(frame);
+                    frame.setContentPane(qrcodeScreen.getPanel());
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    frame.pack();
+                    frame.setVisible(true);
+                }
+                else{
+                    System.out.println("Erro a registar utilizador");
+                }
+
+
             }
         });
     }

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -28,13 +29,20 @@ public class Manager {
         return SingletonHolder.instance;
     }
 
-    public User registerUser(String username, String password){
+    public int userCheck(String username, String password){
         if (username != null && password != null) {
-            User user = new User(username, password);
-            users.put(username, user);
-            return user;
+            if (users.contains(username)){
+                users.get(username).set_isLoggedIn(true);
+                return 1;
+            }
+            else {
+                User user = new User(username, password);
+                users.put(username, user);
+                users.get(username).set_isLoggedIn(true);
+                return 0;
+            }
         }
-        return null;
+        return -1;
     }
 
     public SecretKey generateKey(){
@@ -49,7 +57,7 @@ public class Manager {
         }
         return null;
     }
-    public byte[] generateQRcode(String text, int width, int height)throws WriterException, IOException {{
+    public byte[] generateQRcode(String text, int width, int height)throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
         BufferedImage image = new BufferedImage(height, width, BufferedImage.TYPE_INT_RGB);
@@ -59,7 +67,12 @@ public class Manager {
         byte[] pngData = pngOutputStream.toByteArray();
         return pngData;
         }
-    }
 
-
+        public boolean validateCode(String code){
+        //Insert TOTP validation here
+            System.out.println("TOTP validated!");
+            return true;
+        }
 }
+
+
