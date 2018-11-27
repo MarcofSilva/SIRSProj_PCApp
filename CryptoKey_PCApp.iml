@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/bluecove-2.1.1-SNAPSHOT.jar!/" />
+          <root url="jar://$MODULE_DIR$/ExternalModules/bluecove-2.1.1-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -19,7 +19,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/core-3.3.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/ExternalModules/core-3.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -28,7 +28,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/javase-3.3.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/ExternalModules/javase-3.3.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
