@@ -16,7 +16,7 @@ public class CryptoKey_TOTP {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(Manager.getInstance().validateCode(textField1.getText())){
+                if(Manager.getInstance().validateOneTimePassword(textField1.getText())){
                     JOptionPane.showMessageDialog(frame, "TOTP validated!");
                 }
                 else{

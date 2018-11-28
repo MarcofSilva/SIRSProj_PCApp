@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,13 +19,20 @@ import javax.crypto.SecretKey;
 
 public class Manager {
 
+    //These two must be in sync with the ones in the android app
+    private static final int NUMBER_OF_DIGITS_IN_OTP = 6; //n belongs to [0, 9] (One time password size)
+    private static final int TIME_RANGE_PASSWORD = 15; //For how long is a one time password valid until a new gets
+
+    private KeyManager keyManager;
     private ConcurrentHashMap<String, User> users = new ConcurrentHashMap();
 
     private static class SingletonHolder {
         private static final Manager instance = new Manager();
     }
 
-    public Manager(){}
+    private Manager(){
+        keyManager = KeyManager.getInstance();
+    }
 
     public static synchronized Manager getInstance() {
         return SingletonHolder.instance;
@@ -46,37 +54,42 @@ public class Manager {
         return -1;
     }
 
-    public SecretKey generateKey(){
-        try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-            keyGen.init(256);
-            SecretKey key = keyGen.generateKey();
+    public byte[] generateSecret() {
+        return keyManager.generateSecret();
+    }
 
-            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+    public void storeSecretKey(byte[] secretKey) {
+        keyManager.setSecretKey(secretKey);
+    }
 
-            return key;
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-        return null;
+    public SecretKey getKey(String algorithm){
+        return keyManager.getSecretKey(algorithm);
     }
     public byte[] generateQRcode(String text, int width, int height)throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-        BufferedImage image = new BufferedImage(height, width, BufferedImage.TYPE_INT_RGB);
+    //    BufferedImage image = new BufferedImage(height, width, BufferedImage.TYPE_INT_RGB);
 
         ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
         byte[] pngData = pngOutputStream.toByteArray();
         return pngData;
-        }
+    }
 
-        public boolean validateCode(String code){
-        //Insert TOTP validation here
-            //HOTP totop = new TOTP();
-            System.out.println("TOTP validated!");
-            return true;
-        }
+    public boolean validateOneTimePassword(String otp){
+            TOTP totp = new TOTP(NUMBER_OF_DIGITS_IN_OTP, TIME_RANGE_PASSWORD);
+            String validOneTimePassword = totp.generateOTP();
+            if(otp.equals(validOneTimePassword)) {
+                System.out.println("TOTP valid! -> " + otp + "==" + validOneTimePassword);
+                return true;
+            }
+            System.out.println("TOTP invalid! -> " + otp + "!=" + validOneTimePassword);
+            return false;
+    }
+
+    public String byteArrayToHexString(byte[] byteArray) {
+        return keyManager.byteArrayToHexString(byteArray);
+    }
 }
 
 
