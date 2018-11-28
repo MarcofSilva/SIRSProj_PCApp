@@ -29,12 +29,12 @@ public class CryptoKey_QRCode {
             System.out.println(qrcodeLabel);
             ImageIcon imageIcon = new ImageIcon("QR.png");
             JLabel label = new JLabel(imageIcon);
-            keyField.setText(Base64.getEncoder().encodeToString(key.getEncoded()));
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-
+        keyField.setText(byteArrayToHexString(key.getEncoded()));
         continueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -53,6 +53,21 @@ public class CryptoKey_QRCode {
 
     public JPanel getPanel() {
         return panelMain;
+    }
+
+    public String byteArrayToHexString(byte[] byteArray) {
+
+        StringBuffer buffer = new StringBuffer();
+
+        for(int i =0; i < byteArray.length; i++){
+            String hex = Integer.toHexString(0xff & byteArray[i]);
+
+            if(hex.length() == 1)
+                buffer.append("0");
+
+            buffer.append(hex);
+        }
+        return buffer.toString();
     }
 }
 

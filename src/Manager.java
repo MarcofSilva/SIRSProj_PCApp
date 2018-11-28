@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.security.KeyStore;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,6 +52,8 @@ public class Manager {
             keyGen.init(256);
             SecretKey key = keyGen.generateKey();
 
+            KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+
             return key;
         } catch (Exception e){
             e.printStackTrace();
@@ -70,6 +73,7 @@ public class Manager {
 
         public boolean validateCode(String code){
         //Insert TOTP validation here
+            //HOTP totop = new TOTP();
             System.out.println("TOTP validated!");
             return true;
         }

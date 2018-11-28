@@ -7,10 +7,16 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;*/
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.ByteBuffer;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 //RFC4226
 class HOTP {
 
-    /*private static final String MAC_ALGORITHM = "HmacSHA1"; //HmacSHA1 returns a 160bit (20bytes) message digest
+    private static final String MAC_ALGORITHM = "HmacSHA1"; //HmacSHA1 returns a 160bit (20bytes) message digest
     private String _secretKey;
     private int _numberDigitsOTP;
 
@@ -101,5 +107,5 @@ class HOTP {
             buffer.append(hex);
         }
         return buffer.toString();
-    }*/
+    }
 }

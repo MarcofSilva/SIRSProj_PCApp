@@ -12,7 +12,7 @@ public class User {
         return _isLoggedIn;
     }
 
-    public void set_isLoggedIn(boolean _isLoggedIn) {
-        this._isLoggedIn = _isLoggedIn;
+    public void set_isLoggedIn(boolean isLoggedIn) {
+        this._isLoggedIn = isLoggedIn;
     }
 }
