@@ -7,6 +7,7 @@ import javax.microedition.io.StreamConnectionNotifier;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.bluetooth.UUID;
 
 /**
  * Minimal Device Discovery example.
@@ -26,8 +27,10 @@ public class MainTestClient {
             localDevice = LocalDevice.getLocalDevice();
             discoveryAgent = localDevice.getDiscoveryAgent();
 
+            UUID[] uuids = {new UUID(UUID_STRING, false)};
             // search the paired devices list for the andrdoid smartphone used for testing the system
-            RemoteDevice[] rdList = discoveryAgent.retrieveDevices(DiscoveryAgent.PREKNOWN);
+            RemoteDevice pairedDevice = discoveryAgent.retrieveDevices(DiscoveryAgent.PREKNOWN)[0];
+            discoveryAgent.searchServices(null, uuids, pairedDevice, null);
             connection = (StreamConnection)Connector.open(connectionURL);
         } catch (Exception e) {
             e.printStackTrace();
