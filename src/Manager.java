@@ -21,7 +21,7 @@ public class Manager {
 
     //These two must be in sync with the ones in the android app
     private static final int NUMBER_OF_DIGITS_IN_OTP = 6; //n belongs to [0, 9] (One time password size)
-    private static final int TIME_RANGE_PASSWORD = 15; //For how long is a one time password valid until a new gets
+    private static final int TIME_RANGE_PASSWORD = 20; //For how long is a one time password valid until a new gets
 
     private KeyManager keyManager;
     private ConcurrentHashMap<String, User> users = new ConcurrentHashMap();

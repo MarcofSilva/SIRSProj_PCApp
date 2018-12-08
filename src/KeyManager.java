@@ -4,7 +4,7 @@ import java.security.SecureRandom;
 
 public class KeyManager {
 
-    private byte[] _secretKey;
+    private byte[] _secretKey; //TODO isto esta aqui a balda, tem de ser guardado como deve ser e tem de ser guardada a chave secreta associando-a ao respetivo utilizador
 
     private static class SingletonHolder {
         private static final KeyManager instance = new KeyManager();
