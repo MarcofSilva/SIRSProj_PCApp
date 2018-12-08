@@ -20,6 +20,7 @@ public class MainTestClient {
     private LocalDevice localDevice;
     private DiscoveryAgent discoveryAgent;
     private StreamConnection connection;
+    private String url;
 
     public MainTestClient() {
 
@@ -27,10 +28,11 @@ public class MainTestClient {
             localDevice = LocalDevice.getLocalDevice();
             discoveryAgent = localDevice.getDiscoveryAgent();
 
-            UUID[] uuids = {new UUID(UUID_STRING, false)};
+            UUID[] uuidSet = new UUID[1];
+            uuidSet[0] = new UUID(UUID_STRING, false);
             // search the paired devices list for the andrdoid smartphone used for testing the system
             RemoteDevice pairedDevice = discoveryAgent.retrieveDevices(DiscoveryAgent.PREKNOWN)[0];
-            discoveryAgent.searchServices(null, uuids, pairedDevice, null);
+            discoveryAgent.searchServices(null, uuidSet, pairedDevice, new MyDiscoveryListener());
             connection = (StreamConnection)Connector.open(connectionURL);
         } catch (Exception e) {
             e.printStackTrace();
@@ -80,50 +82,31 @@ public class MainTestClient {
         MainTestClient obj = new MainTestClient();
         obj.run();
     }
-}
+    class MyDiscoveryListener implements DiscoveryListener {
+        public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
 
-/*
-class MyDiscoveryListener implements DiscoveryListener {
-    public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
-        System.out.println("Device " + btDevice.getBluetoothAddress() + " found");
-        devicesDiscovered.addElement(btDevice);
-        try {
-            System.out.println("     name " + btDevice.getFriendlyName(false));
-            System.out.println(btDevice.getFriendlyName(false).equals("Galaxy A7 (2018)"));
-            if( btDevice.getFriendlyName(false).equals("Galaxy A7 (2018)")) device = btDevice;
-        } catch (IOException cantGetDeviceName) {
         }
-    }
 
-    public void inquiryCompleted(int discType) {
-        System.out.println("Device Inquiry completed!");
-        synchronized (lock) {
-            lock.notifyAll();
+        public void inquiryCompleted(int discType) {
+
         }
-    }
 
-    public void serviceSearchCompleted(int transID, int respCode) {
-        synchronized (lock) {
+        public void serviceSearchCompleted(int transID, int respCode) {
             System.out.println("Service Search completed!");
-            lock.notify();
         }
-    }
 
-    public void servicesDiscovered(int arg0, ServiceRecord[] services) {
-        for (int i = 0; i < services.length; i++) {
-            String url = services[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
-            if (url == null) {
-                continue;
-            }
-            System.out.println("1");
-            DataElement serviceName = services[i].getAttributeValue(0x0100);
-            System.out.println("2");
-            if (serviceName != null) {
-                System.out.println("service " + serviceName.getValue() + " found " + url);
-            } else {
+        public void servicesDiscovered(int arg0, ServiceRecord[] services) {
+            for (int i = 0; i < services.length; i++) {
+                url = services[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
+                if (url == null) {
+                    continue;
+                }
                 System.out.println("service found " + url);
             }
-            sendMessageToDevice(url);
+            //sendMessageToDevice(url);
         }
     }
-}*/
+}
+
+
+

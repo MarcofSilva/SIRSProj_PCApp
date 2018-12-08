@@ -68,14 +68,14 @@ public class MainTestServer {
                 System.out.println(new String(buffer));
                 //
 
-                securityManagment(os);
+                securityManagement(os);
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        private void securityManagment(OutputStream os) {
+        private void securityManagement(OutputStream os) {
         //TODO
         }
 
