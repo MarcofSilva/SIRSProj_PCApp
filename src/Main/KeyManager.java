@@ -1,3 +1,5 @@
+package Main;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
@@ -5,6 +7,7 @@ import java.security.SecureRandom;
 public class KeyManager {
 
     private byte[] _secretKey; //TODO isto esta aqui a balda, tem de ser guardado como deve ser e tem de ser guardada a chave secreta associando-a ao respetivo utilizador
+    private byte[] _publicKey;
 
     private static class SingletonHolder {
         private static final KeyManager instance = new KeyManager();
@@ -18,8 +21,9 @@ public class KeyManager {
         return SingletonHolder.instance;
     }
 
-    public void setSecretKey(byte[] secretKey) {
-        _secretKey = secretKey;
+    public void setSecretKey(byte[] secretKey) { _secretKey = secretKey; }
+    public void setPublicKey(byte[] publicKey) {
+        _publicKey = publicKey;
     }
 
     public SecretKey getSecretKey(String algorithm) {

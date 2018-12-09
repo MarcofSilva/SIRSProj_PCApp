@@ -1,4 +1,8 @@
-public class TOTP extends HOTP{
+package Main;
+
+import Main.HOTP;
+
+public class TOTP extends HOTP {
 
     private int _timeRangeOfPassword; //One time password update every TIME_RANGE_PASSWORD seconds
 

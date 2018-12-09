@@ -1,15 +1,8 @@
-import com.google.zxing.WriterException;
+import Main.Manager;
 
-import javax.crypto.SecretKey;
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Base64;
 
 
 public class CryptoKey_QRCode {
@@ -21,7 +14,7 @@ public class CryptoKey_QRCode {
 
     private Manager manager;
 
-    public CryptoKey_QRCode(JFrame frame) {
+    public CryptoKey_QRCode(JFrame frame, String username) {
         manager = Manager.getInstance();
 
         byte[] key = manager.generateSecret();
@@ -39,7 +32,7 @@ public class CryptoKey_QRCode {
         continueButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CryptoKey_TOTP totpScreen = new CryptoKey_TOTP(frame);
+                CryptoKey_TOTP totpScreen = new CryptoKey_TOTP(frame, username);
                 frame.setContentPane(totpScreen.getPanel());
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.pack();

@@ -3,12 +3,14 @@ package Bluetooth_Java;
 import javax.bluetooth.*;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import javax.bluetooth.UUID;
+import Main.Manager;
 
-public class MainTestClient {
+public class MainTestClient{
 
     private static final String UUID_STRING = "1a86d88683824103a0d298e61ce4d50c";
     private UUID[] uuidSet;
@@ -33,7 +35,7 @@ public class MainTestClient {
         }
     }
 
-    private void run() {
+    public void run() {
         // search the paired devices list for the android smartphone used for testing the system
         RemoteDevice pairedDevice = discoveryAgent.retrieveDevices(DiscoveryAgent.PREKNOWN)[0];
         try {
@@ -62,6 +64,7 @@ public class MainTestClient {
             os.close();
             byte[] buffer = new byte[1024];
             is.read(buffer);
+            Manager.getInstance().storePublicKey(buffer);
             System.out.println(new String(buffer));
             //
 
@@ -78,6 +81,7 @@ public class MainTestClient {
 
 
     public static void main(String[] args) {
+        System.out.println("yee");
         MainTestClient obj = new MainTestClient();
 
         obj.run();
@@ -111,5 +115,6 @@ public class MainTestClient {
         }
     }
 }
+
 
 
