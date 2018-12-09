@@ -3,24 +3,22 @@ package Bluetooth_Java;
 import javax.bluetooth.*;
 import javax.microedition.io.Connector;
 import javax.microedition.io.StreamConnection;
-import javax.microedition.io.StreamConnectionNotifier;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import javax.bluetooth.UUID;
 
-/**
- * Minimal Device Discovery example.
- */
 public class MainTestClient {
 
     private static final String UUID_STRING = "1a86d88683824103a0d298e61ce4d50c";
-    private String connectionURL = "btspp://localhost:" + UUID_STRING + ";name=RemoteBluetooth";
+    private UUID[] uuidSet;
+
+    private Object lock = new Object();
 
     private LocalDevice localDevice;
     private DiscoveryAgent discoveryAgent;
     private StreamConnection connection;
-    private String url;
+    private String connectionURL;
 
     public MainTestClient() {
 
@@ -28,27 +26,28 @@ public class MainTestClient {
             localDevice = LocalDevice.getLocalDevice();
             discoveryAgent = localDevice.getDiscoveryAgent();
 
-            UUID[] uuidSet = new UUID[1];
+            uuidSet = new UUID[1];
             uuidSet[0] = new UUID(UUID_STRING, false);
-            // search the paired devices list for the andrdoid smartphone used for testing the system
-            RemoteDevice pairedDevice = discoveryAgent.retrieveDevices(DiscoveryAgent.PREKNOWN)[0];
-            discoveryAgent.searchServices(null, uuidSet, pairedDevice, new MyDiscoveryListener());
-            connection = (StreamConnection)Connector.open(connectionURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void run() {
-        // waiting for connection
-        while(true) {
-            try {
-                manageConnection(connection);
-            } catch (Exception e) {
-                //try again
-                continue;
-                //TODO deveria ser assim
+        // search the paired devices list for the android smartphone used for testing the system
+        RemoteDevice pairedDevice = discoveryAgent.retrieveDevices(DiscoveryAgent.PREKNOWN)[0];
+        try {
+            discoveryAgent.searchServices(null, uuidSet, pairedDevice, new MyDiscoveryListener());
+
+            //Wait for the services search to be over
+            synchronized (lock) {
+                lock.wait();
             }
+            //After founding the service of the android app get the conector and start the communication management
+            connection = (StreamConnection)Connector.open(connectionURL);
+            manageConnection(connection);
+        } catch (Exception e) {
+            //TODO
         }
     }
 
@@ -80,15 +79,16 @@ public class MainTestClient {
 
     public static void main(String[] args) {
         MainTestClient obj = new MainTestClient();
+
         obj.run();
     }
     class MyDiscoveryListener implements DiscoveryListener {
         public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
-
+            //Not relevant
         }
 
         public void inquiryCompleted(int discType) {
-
+            //Not relevant
         }
 
         public void serviceSearchCompleted(int transID, int respCode) {
@@ -96,17 +96,20 @@ public class MainTestClient {
         }
 
         public void servicesDiscovered(int arg0, ServiceRecord[] services) {
+            //We are expecting that only one service exist in the paired device
             for (int i = 0; i < services.length; i++) {
-                url = services[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
-                if (url == null) {
+                connectionURL = services[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
+                if (connectionURL == null) {
                     continue;
                 }
-                System.out.println("service found " + url);
+                System.out.println("service found " + connectionURL);
             }
-            //sendMessageToDevice(url);
+            //Awakens the thread waiting for the service search to be over
+            synchronized(lock) {
+                lock.notifyAll();
+            }
         }
     }
 }
-
 
 
