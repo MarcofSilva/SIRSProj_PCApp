@@ -8,7 +8,9 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.crypto.SecretKey;
 
@@ -33,6 +35,13 @@ public class Manager {
         return SingletonHolder.instance;
     }
 
+    public User getUser(String username){
+        if(users.containsKey(username)){
+            return users.get(username);
+        }
+        else return null;
+    }
+
     public int userCheck(String username, String password){
         if (username != null && password != null) {
             if (users.containsKey(username) && users.get(username).get_password().equals(password)){
@@ -43,6 +52,7 @@ public class Manager {
                 User user = new User(username, password);
                 users.put(username, user);
                 users.get(username).set_isLoggedIn(true);
+                KeyManager.getInstance().generateFileEncryptor(username); //this will be the key to encrypt the users' files
                 return 0;
             }
         }
@@ -50,7 +60,9 @@ public class Manager {
     }
 
     public void logOut(String username){
+
         users.get(username).set_isLoggedIn(false);
+        encrypt(username);
     }
 
     public byte[] generateSecret() {
@@ -94,10 +106,29 @@ public class Manager {
         return keyManager.byteArrayToHexString(byteArray);
     }
 
-    public void encryptionRequest(){
-        System.out.println("hereee");
+    public void keyRequest(){
         MainTestClient client = new MainTestClient();
         client.run();
+    }
+
+    public void addFile(String username, String filepath){
+        users.get(username).add_file(filepath);
+    }
+
+    public void removeFile(String username, String filepath){
+        users.get(username).remove_file(filepath);
+    }
+
+    public List<String> askFiles(String username){
+        return users.get(username).get_files();
+    }
+
+    public void encrypt(String username){
+        KeyManager.getInstance().encrypt((username));
+    }
+
+    public void decrypt(String username){
+        KeyManager.getInstance().encrypt((username));
     }
 }
 

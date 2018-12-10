@@ -7,6 +7,8 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import javax.bluetooth.UUID;
 import Main.Manager;
 
@@ -64,7 +66,11 @@ public class MainTestClient{
             os.close();
             byte[] buffer = new byte[1024];
             is.read(buffer);
-            Manager.getInstance().storePublicKey(buffer);
+
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(2048);
+            KeyPair keyPair = keyPairGenerator.generateKeyPair();
+            Manager.getInstance().storePublicKey(keyPair.getPublic().getEncoded());
             System.out.println(new String(buffer));
             //
 

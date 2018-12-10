@@ -1,9 +1,13 @@
 package Main;
 
+import java.util.ArrayList;
+
 public class User {
     private String _username;
     private String _password; //TODO password shouldn't be stored this way
     private boolean _isLoggedIn = false;
+
+    private ArrayList<String> _files = new ArrayList<String>();
 
     public User(String username, String password){
         _username = username;
@@ -19,4 +23,16 @@ public class User {
     }
 
     public String get_password(){ return _password;}
+
+    public ArrayList<String> get_files() {
+        return _files;
+    }
+
+    public void add_file(String file) {
+        _files.add(file);
+    }
+
+    public void remove_file(String file) {
+        _files.remove(file);
+    }
 }

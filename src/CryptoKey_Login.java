@@ -9,7 +9,6 @@ public class CryptoKey_Login {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JPanel panelMain;
-    private JList filesList;
 
     public JPanel getPanel() {
         return panelMain;
@@ -27,13 +26,16 @@ public class CryptoKey_Login {
                     frame.setContentPane(totpScreen.getPanel());
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.pack();
+                    frame.setLocationRelativeTo(null);
                     frame.setVisible(true);
+                    Manager.getInstance().decrypt(usernameField.getText());
                 }
                 else if(login == 0){ //registered & logged in
                     CryptoKey_QRCode qrcodeScreen = new CryptoKey_QRCode(frame, usernameField.getText());
                     frame.setContentPane(qrcodeScreen.getPanel());
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.pack();
+                    frame.setLocationRelativeTo(null);
                     frame.setVisible(true);
                 }
                 else{
@@ -50,6 +52,7 @@ public class CryptoKey_Login {
         frame.setContentPane(new CryptoKey_Login(frame).panelMain);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 
     }

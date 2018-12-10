@@ -20,7 +20,7 @@ public class CryptoKey_TOTP {
             public void actionPerformed(ActionEvent e) {
                 if(Manager.getInstance().validateOneTimePassword(textField1.getText())){
                     JOptionPane.showMessageDialog(frame, "TOTP validated!");
-                    Manager.getInstance().encryptionRequest();
+                    Manager.getInstance().keyRequest();
                     CryptoKey_Home homeScreen = new CryptoKey_Home(frame, username);
                     frame.setContentPane(homeScreen.getPanel());
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

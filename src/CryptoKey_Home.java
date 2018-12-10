@@ -1,38 +1,41 @@
 import Main.Manager;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class CryptoKey_Home {
     private JButton logOutButton;
     private JPanel panelMain;
     private JButton chooseFilesButton;
     private JList filesList;
-    private JButton addButton;
+    private JButton removeButton;
     private DefaultListModel<String> listModel;
     private JFrame _frame;
     // private JFileChooser fileChooser;
 
     public CryptoKey_Home(JFrame frame, String username) {
         _frame = frame;
-        //panelMain = getPanel();
-        /*logOutButton = new JButton("Log out");
-        chooseFilesButton = new JButton("Choose File");
-        addButton = new JButton("Add");
-        panelMain.add(addButton);
-        panelMain.add(chooseFilesButton);
-        panelMain.add(logOutButton);*/
+        panelMain = new JPanel();//getPanel();
         listModel = new DefaultListModel<>();
-        listModel.addElement("Jane Doe");
-        listModel.addElement("John Smith");
-        listModel.addElement("Kathy Green");
+        List<String> userFiles = Manager.getInstance().askFiles(username);
+        for (String file : userFiles) {
+            listModel.addElement(file);
+        }
         filesList = new JList(listModel); //data has type Object[]
         filesList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         filesList.setLayoutOrientation(JList.VERTICAL);
         filesList.setVisible(true);
-        //panelMain.add(filesList); // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+        panelMain.add(filesList); // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+
+        logOutButton = new JButton("Log out");
+        chooseFilesButton = new JButton("Choose File");
+        removeButton = new JButton("Remove");
+        panelMain.add(removeButton);
+        panelMain.add(chooseFilesButton);
+        panelMain.add(logOutButton);
+        panelMain.add(new JScrollPane(filesList));
         frame.pack();
         frame.setVisible(true);
 
@@ -56,15 +59,36 @@ public class CryptoKey_Home {
                 int returnVal = fc.showDialog(frame, "Select");
                 if(returnVal == JFileChooser.APPROVE_OPTION) {
                     System.out.println("You chose to open this file: " +
-                            fc.getSelectedFile().getName());
+                            fc.getSelectedFile().getAbsolutePath());
+                    if(!listModel.contains(fc.getSelectedFile().getAbsolutePath())) {
+                        listModel.addElement(fc.getSelectedFile().getAbsolutePath());
+                        Manager.getInstance().addFile(username, fc.getSelectedFile().getAbsolutePath()); //Might be handier to store filepath for encription
+                    }
                 }
 
             }
         });
-        addButton.addActionListener(new ActionListener() {
+        removeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int index = filesList.getSelectedIndex();
+                Manager.getInstance().removeFile(username, listModel.get(index));
+                listModel.remove(index);
 
+                int size = listModel.getSize();
+
+                if (size == 0) { //Nobody's left, disable firing.
+                    removeButton.setEnabled(false);
+
+                } else { //Select an index.
+                    if (index == listModel.getSize()) {
+                        //removed item in last position
+                        index--;
+                    }
+
+                    filesList.setSelectedIndex(index);
+                    filesList.ensureIndexIsVisible(index);
+                }
             }
         });
     }
