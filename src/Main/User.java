@@ -24,6 +24,8 @@ public class User {
 
     public String get_password(){ return _password;}
 
+    public String get_username(){return _username;}
+
     public ArrayList<String> get_files() {
         return _files;
     }

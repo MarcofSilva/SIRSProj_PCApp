@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.crypto.SecretKey;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 public class Manager {
 
@@ -131,6 +133,21 @@ public class Manager {
 
     public void decrypt(String username){
         KeyManager.getInstance().decrypt((username));
+    }
+
+    public void persistentshit(){
+        for(User u : users.values()){
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(u.get_username()));
+                writer.write(u.get_password());
+
+                writer.close();
+            }
+            catch (IOException e ){
+
+            }
+        }
+
     }
 }
 

@@ -32,7 +32,6 @@ public class KeyManager {
     }
 
 
-
     public void encrypt(String username){ //TODO encrypt with private key
         List<String> userFiles = Manager.getInstance().getUser(username).get_files();
         for (String filepath: userFiles) {
