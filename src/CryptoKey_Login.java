@@ -28,7 +28,7 @@ public class CryptoKey_Login {
                     frame.pack();
                     frame.setLocationRelativeTo(null);
                     frame.setVisible(true);
-                    Manager.getInstance().decrypt(usernameField.getText());
+
                 }
                 else if(login == 0){ //registered & logged in
                     CryptoKey_QRCode qrcodeScreen = new CryptoKey_QRCode(frame, usernameField.getText());

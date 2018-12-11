@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class KeyManager {
     private byte[] _secretKey; //TODO isto esta aqui a balda, tem de ser guardado como deve ser e tem de ser guardada a chave secreta associando-a ao respetivo utilizador
     private PublicKey _publicKey;
     private byte[] _fileEncryptor;
+    private PrivateKey _privateKey;
 
     private static class SingletonHolder {
         private static final KeyManager instance = new KeyManager();
@@ -29,21 +31,7 @@ public class KeyManager {
         return SingletonHolder.instance;
     }
 
-    public void setSecretKey(byte[] secretKey) {
-        _secretKey = secretKey;
-    }
 
-    public void setPublicKey(byte[] publicKeyBytes) {
-        try {
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            PublicKey publicKey = kf.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
-            _publicKey = publicKey;
-        } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
-        } catch (InvalidKeySpecException ike){
-            ike.printStackTrace();
-        }
-    }
 
     public void encrypt(String username){ //TODO encrypt with private key
         List<String> userFiles = Manager.getInstance().getUser(username).get_files();
@@ -51,7 +39,7 @@ public class KeyManager {
             File f = new File(filepath);
             try {
                 Cipher cipher = Cipher.getInstance("AES");
-                cipher.init(Cipher.ENCRYPT_MODE, getFileEncriptor("AES"));
+                cipher.init(Cipher.ENCRYPT_MODE, getFileEncryptor("AES"));
                 byte[] encrypted = cipher.doFinal(Files.readAllBytes(f.toPath()));
                 try (FileOutputStream fos = new FileOutputStream(filepath)) {
                     fos.write(encrypted);
@@ -79,12 +67,14 @@ public class KeyManager {
             File f = new File(filepath);
             try {
                 Cipher cipher = Cipher.getInstance("AES");
-                cipher.init(Cipher.DECRYPT_MODE, getFileEncriptor("AES"));
+                cipher.init(Cipher.DECRYPT_MODE, getFileEncryptor("AES"));
                 byte[] decrypted = cipher.doFinal(Files.readAllBytes(f.toPath()));
                 try (FileOutputStream fos = new FileOutputStream(filepath)) {
                     fos.write(decrypted);
                     //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
                 }
+                String s = new String(decrypted);
+                System.out.println("decrypted :" + s);
             } catch (NoSuchAlgorithmException nsa) {
                 nsa.printStackTrace();
             } catch (NoSuchPaddingException nsp) {
@@ -108,11 +98,20 @@ public class KeyManager {
         return new SecretKeySpec(_secretKey, algorithm);
     }
 
-    public SecretKey getFileEncriptor(String algorithm) {
+    public void setSecretKey(byte[] secretKey) {
+        _secretKey = secretKey;
+    }
+
+    public SecretKey getFileEncryptor(String algorithm) {
         if(_fileEncryptor == null) {
             return null;
         }
         return new SecretKeySpec(_fileEncryptor, algorithm);
+    }
+
+    public void generateFileEncryptor(String username){
+        byte[] key = generateSecret(); //TODO key should not be byte[]
+        _fileEncryptor = key;        //TODO associate with user
     }
 
     public byte[] generateSecret() {
@@ -120,6 +119,30 @@ public class KeyManager {
         byte[] key = new byte[32]; //TODO number of bytes of secret generated
         secureRandom.nextBytes(key);
         return key;
+    }
+
+    public void setPublicKey(byte[] publicKeyBytes) {
+        try {
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = kf.generatePublic(new X509EncodedKeySpec(publicKeyBytes));
+            _publicKey = publicKey;
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        } catch (InvalidKeySpecException ike){
+            ike.printStackTrace();
+        }
+    }
+
+    public void setPrivateKey(byte[] privateKeyBytes) {
+        try {
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            PrivateKey privateKey = kf.generatePrivate(new PKCS8EncodedKeySpec(privateKeyBytes));
+            _privateKey = privateKey;
+        } catch (NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        } catch (InvalidKeySpecException ike){
+            ike.printStackTrace();
+        }
     }
 
     //Base64 Encoder and Decoder don't work for Android with API < 26 and the android used for testing with the lowest API version has API 23
@@ -148,8 +171,5 @@ public class KeyManager {
         return buffer.toString();
     }
 
-    public void generateFileEncryptor(String username){
-            byte[] key = generateSecret(); //TODO key should not be byte[]
-            _fileEncryptor = key;        //TODO associate with user
-    }
+
 }

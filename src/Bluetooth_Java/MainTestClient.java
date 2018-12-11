@@ -74,12 +74,13 @@ public class MainTestClient{
             os.close();
             byte[] buffer = new byte[2048];
             is.read(buffer);
-
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            Manager.getInstance().storePublicKey(keyPair.getPublic().getEncoded());
+            System.out.print("MESSAGE");
             System.out.println("message: " + new String(buffer));
+            /*KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(2048);
+            KeyPair keyPair = keyPairGenerator.generateKeyPair();*/
+            Manager.getInstance().storePublicKey(buffer);
+
             //
 
             securityManagment(os);
