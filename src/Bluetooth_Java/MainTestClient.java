@@ -7,10 +7,13 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import javax.bluetooth.UUID;
 import Main.Manager;
+
+import static java.util.Arrays.copyOfRange;
 
 public class MainTestClient{
 
@@ -45,7 +48,7 @@ public class MainTestClient{
         }
     }
 
-    public void run() {
+    public void run(String username) {
         // search the paired devices list for the android smartphone used for testing the system
         RemoteDevice pairedDevice = discoveryAgent.retrieveDevices(DiscoveryAgent.PREKNOWN)[0];
         try {
@@ -57,29 +60,36 @@ public class MainTestClient{
             }
             //After founding the service of the android app get the conector and start the communication management
             connection = (StreamConnection)Connector.open(connectionURL);
-            manageConnection(connection);
+            manageConnection(connection, username);
         } catch (Exception e) {
             //TODO
         }
     }
 
-    private void manageConnection(StreamConnection connection){
+    private void manageConnection(StreamConnection connection, String username){
         try {
             InputStream is = connection.openInputStream();
             OutputStream os = connection.openOutputStream();
 
             //TODO for testing
-            byte data[] = "Hello Smartphone, from computer, passa para ca a chave de encriptacao !!!".getBytes();
+            byte[] intbytes = new byte[8];
+            ByteBuffer.wrap(intbytes).putLong(Manager.getInstance().getUser(username).getSessionNumber());
+            byte data[] = intbytes;
             os.write(data);
             os.close();
             byte[] buffer = new byte[2048];
             is.read(buffer);
-            System.out.print("MESSAGE");
             System.out.println("message: " + new String(buffer));
+            ByteBuffer bBuffer = ByteBuffer.wrap(buffer);
+            int privKeySize = bBuffer.getInt(0);
+            int pubKeySize = bBuffer.getInt(4);
+            byte[] privateKey = copyOfRange(buffer, 8, privKeySize + 8); //from: inclusive, to: exclusive
+            byte[] publicKey = copyOfRange(buffer, 8 + privKeySize, 8 + privKeySize + pubKeySize);
             /*KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             KeyPair keyPair = keyPairGenerator.generateKeyPair();*/
-            Manager.getInstance().storePublicKey(buffer);
+            Manager.getInstance().storePublicKey(publicKey);
+            if(privKeySize != 0) Manager.getInstance().storePrivateKey(privateKey);
 
             //
 
@@ -94,13 +104,14 @@ public class MainTestClient{
         //TODO
     }
 
-
-    public static void main(String[] args) {
-        System.out.println("yee");
-        MainTestClient obj = new MainTestClient();
-
-        obj.run();
+    public void closeConnection(){
+        try {
+            connection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
     class MyDiscoveryListener implements DiscoveryListener {
         public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
             //Not relevant

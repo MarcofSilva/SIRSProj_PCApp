@@ -24,6 +24,7 @@ public class Manager {
 
     private KeyManager keyManager;
     private ConcurrentHashMap<String, User> users = new ConcurrentHashMap(); //prob doesnt need concurrent
+    MainTestClient client; //remote object (phone)
 
     private static class SingletonHolder {
         private static final Manager instance = new Manager();
@@ -54,7 +55,6 @@ public class Manager {
                 User user = new User(username, password);
                 users.put(username, user);
                 users.get(username).set_isLoggedIn(true);
-                KeyManager.getInstance().generateFileEncryptor(username); //this will be the key to encrypt the user's files
                 return 0;
             }
         }
@@ -65,10 +65,12 @@ public class Manager {
 
         users.get(username).set_isLoggedIn(false);
         encrypt(username);
+        client.closeConnection();
+
     }
 
     public byte[] generateSecret() {
-        return keyManager.generateSecret();
+        return keyManager.generateSecret(16);
     }
 
     public void storeSecretKey(byte[] secretKey) {
@@ -77,6 +79,10 @@ public class Manager {
 
     public void storePublicKey(byte[] publicKey) {
         keyManager.setPublicKey(publicKey);
+    }
+
+    public void storePrivateKey(byte[] privateKey) {
+        keyManager.setPrivateKey(privateKey);
     }
 
     public SecretKey getKey(String algorithm){
@@ -98,8 +104,10 @@ public class Manager {
             String validOneTimePassword = totp.generateOTP();
             if(otp.equals(validOneTimePassword)) {
                 System.out.println("Main.TOTP valid! -> " + otp + "==" + validOneTimePassword);
-                keyRequest();
-                decrypt(username);
+                users.get(username).incSessionNumber();
+                keyRequest(username);
+                if(users.get(username).getSessionNumber() != 1) decrypt(username);
+                KeyManager.getInstance().generateFileEncryptor(username); //this will be the key to encrypt the user's files
                 return true;
             }
             System.out.println("Main.TOTP invalid! -> " + otp + "!=" + validOneTimePassword);
@@ -110,9 +118,9 @@ public class Manager {
         return keyManager.byteArrayToHexString(byteArray);
     }
 
-    public void keyRequest(){
-        MainTestClient client = new MainTestClient();
-        client.run();
+    public void keyRequest(String username){
+        client = new MainTestClient();
+        client.run(username);
     }
 
     public void addFile(String username, String filepath){
