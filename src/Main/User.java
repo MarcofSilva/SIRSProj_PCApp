@@ -6,6 +6,7 @@ public class User {
     private String _username;
     private String _password; //TODO password shouldn't be stored this way
     private boolean _isLoggedIn = false;
+    private long sessionNumber = 0;
 
     private ArrayList<String> _files = new ArrayList<String>();
 
@@ -37,4 +38,8 @@ public class User {
     public void remove_file(String file) {
         _files.remove(file);
     }
+
+    public long getSessionNumber() { return sessionNumber; }
+
+    public void incSessionNumber() { this.sessionNumber++; }
 }

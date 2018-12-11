@@ -33,6 +33,7 @@ public class KeyManager {
 
 
     public void encrypt(String username){ //TODO encrypt with private key
+        System.out.println("encrypting...");
         List<String> userFiles = Manager.getInstance().getUser(username).get_files();
         for (String filepath: userFiles) {
             File f = new File(filepath);
@@ -58,9 +59,12 @@ public class KeyManager {
                 bpe.printStackTrace();
             }
         }
+        encryptFileDecryptor();
     }
 
     public void decrypt(String username){
+        System.out.println("decrypting...");
+        decryptFileDecryptor(username);
         List<String> userFiles = Manager.getInstance().getUser(username).get_files();
         for (String filepath: userFiles) {
             File f = new File(filepath);
@@ -109,13 +113,50 @@ public class KeyManager {
     }
 
     public void generateFileEncryptor(String username){
-        byte[] key = generateSecret(); //TODO key should not be byte[]
-        _fileEncryptor = key;        //TODO associate with user
+            _fileEncryptor = generateSecret(16); //TODO key should not be byte[]
     }
 
-    public byte[] generateSecret() {
+    private SecretKeySpec decryptFileDecryptor(String username){
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.DECRYPT_MODE, _privateKey);
+            byte[] encryptor = cipher.doFinal(_fileEncryptor);
+            return new SecretKeySpec(encryptor, "AES");
+        } catch (NoSuchAlgorithmException nsa) {
+            nsa.printStackTrace();
+        } catch (NoSuchPaddingException nsp) {
+            nsp.printStackTrace();
+        } catch (InvalidKeyException ike) {
+            ike.printStackTrace();
+        } catch (IllegalBlockSizeException ibs) {
+            ibs.printStackTrace();
+        } catch (BadPaddingException bpe) {
+            bpe.printStackTrace();
+        }
+        return null;
+    }
+
+    private void encryptFileDecryptor(){
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.ENCRYPT_MODE, _publicKey);
+            _fileEncryptor = cipher.doFinal(_fileEncryptor);//TODO associate with user
+        } catch (NoSuchAlgorithmException nsa) {
+            nsa.printStackTrace();
+        } catch (NoSuchPaddingException nsp) {
+            nsp.printStackTrace();
+        } catch (InvalidKeyException ike) {
+            ike.printStackTrace();
+        } catch (IllegalBlockSizeException ibs) {
+            ibs.printStackTrace();
+        } catch (BadPaddingException bpe) {
+            bpe.printStackTrace();
+        }
+    }
+
+    public byte[] generateSecret(int numbytes) {
         SecureRandom secureRandom = new SecureRandom();
-        byte[] key = new byte[32]; //TODO number of bytes of secret generated
+        byte[] key = new byte[numbytes]; //TODO number of bytes of secret generated
         secureRandom.nextBytes(key);
         return key;
     }
