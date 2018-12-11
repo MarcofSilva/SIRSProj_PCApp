@@ -46,6 +46,7 @@ public class Manager {
         if (username != null && password != null) {
             if (users.containsKey(username) && users.get(username).get_password().equals(password)){
                 users.get(username).set_isLoggedIn(true);
+                KeyManager.getInstance().decrypt(username);
                 return 1;
             }
             else {

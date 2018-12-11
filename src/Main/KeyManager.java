@@ -57,8 +57,6 @@ public class KeyManager {
                     fos.write(encrypted);
                     //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
                 }
-                String s = new String(encrypted);
-                System.out.println(s);
             } catch(NoSuchAlgorithmException nsa){
                 nsa.printStackTrace();
             } catch(NoSuchPaddingException nsp){
@@ -87,8 +85,6 @@ public class KeyManager {
                     fos.write(decrypted);
                     //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
                 }
-                String s = new String(decrypted);
-                System.out.println(s);
             } catch (NoSuchAlgorithmException nsa) {
                 nsa.printStackTrace();
             } catch (NoSuchPaddingException nsp) {

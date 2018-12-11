@@ -71,7 +71,7 @@ public class MainTestClient{
             keyPairGenerator.initialize(2048);
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
             Manager.getInstance().storePublicKey(keyPair.getPublic().getEncoded());
-            System.out.println(new String(buffer));
+            System.out.println("message: " + new String(buffer));
             //
 
             securityManagment(os);
