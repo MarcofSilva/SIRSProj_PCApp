@@ -25,15 +25,23 @@ public class MainTestClient{
     private String connectionURL;
 
     public MainTestClient() {
-
+        while(!LocalDevice.isPowerOn()) {
+            System.out.println("Turn on bluetooth");
+            try {
+                Thread.sleep(10000); // sleep for some time and then check if the bluetooth has already been turned on
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                //TODO
+            }
+        }
         try {
             localDevice = LocalDevice.getLocalDevice();
             discoveryAgent = localDevice.getDiscoveryAgent();
 
             uuidSet = new UUID[1];
             uuidSet[0] = new UUID(UUID_STRING, false);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (BluetoothStateException e) {
+            System.out.println("BluetoothStack not detected."); //TODO
         }
     }
 
@@ -64,7 +72,7 @@ public class MainTestClient{
             byte data[] = "Hello Smartphone, from computer, passa para ca a chave de encriptacao !!!".getBytes();
             os.write(data);
             os.close();
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[2048];
             is.read(buffer);
 
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
