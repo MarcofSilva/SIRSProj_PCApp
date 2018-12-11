@@ -7,7 +7,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public class MACHandler {
-    private static final String MAC_ALGORITHM = "HmacSHA1";
+    private static final String MAC_ALGORITHM = "HmacSHA256";
 
     public byte[] getMAC(byte[] message, SecretKey key){
         byte[] digest = null;
@@ -25,17 +25,14 @@ public class MACHandler {
             e.printStackTrace();
             //TODO deal with exception
         }
-
         return digest;
     }
 
     //Returns null if invalid and msg without the mac in the end
     public byte[] validateMAC(byte[] messageMac, SecretKey key) {
-        //TODO
         ByteBuffer byteBuffer = ByteBuffer.wrap(messageMac);
-        int macsize = 4;
-        byte[] message = new byte[messageMac.length- macsize];
-        byte[] mac = new byte[macsize];
+        byte[] message = new byte[messageMac.length- 256];
+        byte[] mac = new byte[256];
 
         byteBuffer.get(message);
         byteBuffer.get(mac);
@@ -46,7 +43,7 @@ public class MACHandler {
             return null;
         }
         //return parte inicial da msg sem o mac
-        return message; //TODO
+        return message;
     }
 
 }
