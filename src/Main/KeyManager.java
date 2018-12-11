@@ -91,7 +91,7 @@ public class KeyManager {
         }
     }
 
-    public SecretKey getSecretKey(String algorithm) {
+    public SecretKey getSecretKey(String algorithm) { //esta e a do qrcode
         if(_secretKey == null) {
             return null;
         }
