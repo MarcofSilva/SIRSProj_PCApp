@@ -18,14 +18,14 @@ public class CryptoKey_TOTP {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(Manager.getInstance().validateOneTimePassword(textField1.getText())){
+                if(Manager.getInstance().validateOneTimePassword(textField1.getText(), username)){
                     JOptionPane.showMessageDialog(frame, "TOTP validated!");
-                    Manager.getInstance().keyRequest();
                     CryptoKey_Home homeScreen = new CryptoKey_Home(frame, username);
                     frame.setContentPane(homeScreen.getPanel());
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.pack();
                     frame.setVisible(true);
+
                 }
                 else{
                     JOptionPane.showMessageDialog(frame, "Failed TOTP validation!");

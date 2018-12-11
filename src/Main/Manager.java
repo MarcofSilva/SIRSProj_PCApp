@@ -52,7 +52,7 @@ public class Manager {
                 User user = new User(username, password);
                 users.put(username, user);
                 users.get(username).set_isLoggedIn(true);
-                KeyManager.getInstance().generateFileEncryptor(username); //this will be the key to encrypt the users' files
+                KeyManager.getInstance().generateFileEncryptor(username); //this will be the key to encrypt the user's files
                 return 0;
             }
         }
@@ -91,11 +91,13 @@ public class Manager {
         return pngData;
     }
 
-    public boolean validateOneTimePassword(String otp){
+    public boolean validateOneTimePassword(String otp, String username){
             TOTP totp = new TOTP(NUMBER_OF_DIGITS_IN_OTP, TIME_RANGE_PASSWORD);
             String validOneTimePassword = totp.generateOTP();
             if(otp.equals(validOneTimePassword)) {
                 System.out.println("Main.TOTP valid! -> " + otp + "==" + validOneTimePassword);
+                keyRequest();
+                decrypt(username);
                 return true;
             }
             System.out.println("Main.TOTP invalid! -> " + otp + "!=" + validOneTimePassword);
@@ -128,7 +130,7 @@ public class Manager {
     }
 
     public void decrypt(String username){
-        KeyManager.getInstance().encrypt((username));
+        KeyManager.getInstance().decrypt((username));
     }
 }
 
