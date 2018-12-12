@@ -39,9 +39,11 @@ public class AuthorizationHandler {
         //So we need it to be a big interval so we can test it and demonstrate it
         //With synchronized systems the interval would need to be small to guarantee freshness
         if( !(timestamp > currentDate-10000 && timestamp < currentDate+10000)){
-            System.out.println("timestamp = " + timestamp + " -- currentDate = " + currentDate);
+            System.out.println("Error validating TimeStamps");
+            System.out.println("TimeStamp Received(ms) = " + timestamp + " -- CurrentTimeStamp(ms) = " + currentDate);
             return null;
         }
+        System.out.println("Time Stamp validated");
         return msg;
     }
 
@@ -54,9 +56,11 @@ public class AuthorizationHandler {
         long sessionNumber = byteBuffer.getLong();
 
         if( sessionNumber != sessionnr ){
-            System.out.println("receivedSessionNumber = " + sessionNumber + " -- supposedSessionNumber = " + sessionnr);
+            System.out.println("Error validating Session Numbers");
+            System.out.println("Session Number Received = " + sessionNumber + " -- Correct Session Number = " + sessionnr);
             return null;
         }
+        System.out.println("Session Number validated");
         return msg;
     }
 

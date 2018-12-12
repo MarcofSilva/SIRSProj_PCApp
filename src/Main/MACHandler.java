@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class MACHandler {
-    private static final String MAC_ALGORITHM = "HmacSHA256";
+    private static final String MAC_ALGORITHM = "HmacSHA256"; //HmacSHA256 returns a 256bit (32bytes) message digest
 
     public byte[] getMAC(byte[] message, SecretKey key){
         byte[] digest = null;
@@ -18,7 +18,6 @@ public class MACHandler {
             mac = Mac.getInstance(MAC_ALGORITHM);
             mac.init(key);
             digest = mac.doFinal(message);
-            System.out.println("Calculated mac = " + KeyManager.getInstance().byteArrayToHexString(digest) );
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -50,9 +49,11 @@ public class MACHandler {
 
         byte[] calculatedMac = getMAC( IVandEncryptedMsg, key );
         if(!Arrays.equals(mac, calculatedMac)) {
-            System.out.println("received = " + mac + " -- calculated = " + calculatedMac);
+            System.out.println("Error, MAC validation failed. Corrupedted message");
+            System.out.println("Mac received = " + KeyManager.getInstance().byteArrayToHexString(mac) + " -- Mac calculated = " + KeyManager.getInstance().byteArrayToHexString(calculatedMac));
             return null;
         }
+        System.out.println("MAC validated");
         //returns msg without mac
         return IVandEncryptedMsg;
     }

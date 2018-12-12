@@ -127,7 +127,7 @@ public class KeyManager {
     }
 
     public void generateFileEncryptor(String username){
-            _fileEncryptor = generateSecret(16); //TODO key should not be byte[]
+            _fileEncryptor = generateSecret(16);
     }
 
     private void decryptFileDecryptor(String username){
@@ -152,7 +152,7 @@ public class KeyManager {
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, _publicKey);
-            _fileEncryptor = cipher.doFinal(_fileEncryptor);//TODO associate with user
+            _fileEncryptor = cipher.doFinal(_fileEncryptor);
         } catch (NoSuchAlgorithmException nsa) {
             nsa.printStackTrace();
         } catch (NoSuchPaddingException nsp) {
@@ -168,7 +168,7 @@ public class KeyManager {
 
     public byte[] generateSecret(int numbytes) {
         SecureRandom secureRandom = new SecureRandom();
-        byte[] key = new byte[numbytes]; //TODO number of bytes of secret generated
+        byte[] key = new byte[numbytes];
         secureRandom.nextBytes(key);
         return key;
     }
@@ -201,15 +201,10 @@ public class KeyManager {
     public byte[] prepareMessageToSend(long sessionNumber) throws Exception {
         ByteBuffer byteBuffer;
         byte[] msg = new byte[0];
-        //Apply the security procedures
-        //TODO
 
-        //Encrypt the MAC
         byte[] content = authHandler.addTimestampAndSessionNumber(msg, sessionNumber);
         byte[] IVandEncryptedMsg = encrypt(content, getSecretKey("AES"));
-        System.out.println("before mac" + byteArrayToHexString(IVandEncryptedMsg));
         byte[] secureMsg = macHandler.addMAC(IVandEncryptedMsg, getSecretKey(MAC_ALGORITHM));
-        System.out.println("after mac" + byteArrayToHexString(IVandEncryptedMsg));
         return secureMsg;
     }
 

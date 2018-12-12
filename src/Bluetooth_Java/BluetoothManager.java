@@ -78,7 +78,7 @@ public class BluetoothManager {
             long sessionNum = Manager.getInstance().getUser(username).getSessionNumber();
 
             byte[] request = keyManager.prepareMessageToSend(sessionNum);
-            System.out.println("pedido feito : " + keyManager.byteArrayToHexString(request));
+            System.out.println("Message Request: " + keyManager.byteArrayToHexString(request));
             os.write(request);
             os.close();
 
@@ -92,17 +92,15 @@ public class BluetoothManager {
                 totalBytes += bytesRead;
                 byteBufferRead.put(buffer, 0, bytesRead);
             }
-            System.out.println("asdfasdfasdf" + totalBytes);
             byte[] result = byteBufferRead.array();
 
             byte[] received = new byte[totalBytes];
             ByteBuffer byteBuffer = ByteBuffer.wrap(result);
             byteBuffer.get(received, 0, totalBytes);
-            System.out.println("message received: " + keyManager.byteArrayToHexString(received));
+            System.out.println("Response to request: " + keyManager.byteArrayToHexString(received));
 
             byte[] msg;
             if ((msg = keyManager.validateMessageReceived(received, sessionNum)) != null) {
-                System.out.println("message received altered: " + keyManager.byteArrayToHexString(msg));
                 ByteBuffer bBuffer = ByteBuffer.wrap(msg);
                 int privKeySize = bBuffer.getInt();
                 int pubKeySize = bBuffer.getInt();
@@ -111,15 +109,13 @@ public class BluetoothManager {
                 bBuffer.get(privateKey);
                 bBuffer.get(publicKey);
 
-                System.out.println("privateKey: " + keyManager.byteArrayToHexString(privateKey) + "publicKey: " + keyManager.byteArrayToHexString(publicKey));
-
                 Manager.getInstance().storePublicKey(publicKey);
                 return privateKey;
             }
             else {
-                System.out.println("message received altered: " + keyManager.byteArrayToHexString(msg));
-                System.out.println("Message received not valid!!");
+                System.out.println("Message received not valid!");
             }
+            is.close();
 
         }
         catch (Exception e) {
@@ -165,7 +161,7 @@ public class BluetoothManager {
                 if (connectionURL == null) {
                     continue;
                 }
-                System.out.println("service found " + connectionURL);
+                System.out.println("Service found " + connectionURL);
             }
             //Awakens the thread waiting for the service search to be over
             synchronized(lock) {
