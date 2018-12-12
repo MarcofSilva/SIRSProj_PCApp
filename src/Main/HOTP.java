@@ -1,4 +1,4 @@
-package Main;//TODO pensar qual a melhor distribuicao por packages
+package Main;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -59,10 +59,8 @@ class HOTP {
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-            //TODO deal with exception
         } catch (InvalidKeyException e) {
             e.printStackTrace();
-            //TODO deal with exception
         }
 
         return digest;

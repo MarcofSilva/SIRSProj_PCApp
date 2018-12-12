@@ -19,7 +19,7 @@ import java.util.List;
 
 public class KeyManager {
 
-    private byte[] _secretKey; //TODO isto esta aqui a balda, tem de ser guardado como deve ser e tem de ser guardada a chave secreta associando-a ao respetivo utilizador
+    private byte[] _secretKey;
     private PublicKey _publicKey;
     private byte[] _fileEncryptor;
     private PrivateKey _privateKey;
@@ -46,7 +46,7 @@ public class KeyManager {
     }
 
 
-    public void encrypt(String username){ //TODO encrypt with private key
+    public void encrypt(String username){
         System.out.println("encrypting...");
         List<String> userFiles = Manager.getInstance().getUser(username).get_files();
         for (String filepath: userFiles) {

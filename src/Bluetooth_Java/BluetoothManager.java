@@ -37,8 +37,7 @@ public class BluetoothManager {
             try {
                 Thread.sleep(10000); // sleep for some time and then check if the bluetooth has already been turned on
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                //TODO
+                System.out.println("An error occurred. Please restart the App.");
             }
         }
         try {
@@ -48,7 +47,7 @@ public class BluetoothManager {
             uuidSet = new UUID[1];
             uuidSet[0] = new UUID(UUID_STRING, false);
         } catch (BluetoothStateException e) {
-            System.out.println("BluetoothStack not detected."); //TODO
+            System.out.println("Error connecting Bluetooth. Please make sure your Bluetooth is on, with only one established connection, and restart the App.");
         }
     }
 
@@ -66,7 +65,7 @@ public class BluetoothManager {
             connection = (StreamConnection)Connector.open(connectionURL);
             return manageConnection(connection, username);
         } catch (Exception e) {
-            //TODO
+            System.out.println("An error occurred. Please restart the App.");
         }
         return null;
     }

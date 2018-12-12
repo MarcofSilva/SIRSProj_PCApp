@@ -21,10 +21,8 @@ public class MACHandler {
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-            //TODO deal with exception
         } catch (InvalidKeyException e) {
             e.printStackTrace();
-            //TODO deal with exception
         }
         return digest;
     }
