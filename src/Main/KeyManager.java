@@ -5,6 +5,7 @@ import com.sun.deploy.uitoolkit.impl.awt.AWTPluginUIToolkit;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.Console;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -206,13 +207,10 @@ public class KeyManager {
         //Encrypt the MAC
         byte[] content = authHandler.addTimestampAndSessionNumber(msg, sessionNumber);
         byte[] IVandEncryptedMsg = encrypt(content, getSecretKey("AES"));
-        /*byte[] mac = macHandler.addMAC(IVandEncryptedMsg, getSecretKey(MAC_ALGORITHM));
-        //Concatenate encrypted message and mac of message
-        byte[] secureMsg = new byte[IVandEncryptedMsg.length + mac.length];
-        System.arraycopy(IVandEncryptedMsg, 0, secureMsg, 0, IVandEncryptedMsg.length);
-        System.arraycopy(mac, 0, secureMsg, IVandEncryptedMsg.length, mac.length);
-        return secureMsg;*/
-        return IVandEncryptedMsg;
+        System.out.println("before mac" + byteArrayToHexString(IVandEncryptedMsg));
+        byte[] secureMsg = macHandler.addMAC(IVandEncryptedMsg, getSecretKey(MAC_ALGORITHM));
+        System.out.println("after mac" + byteArrayToHexString(IVandEncryptedMsg));
+        return secureMsg;
     }
 
     //Returns true if message is valid and false otherwise
@@ -220,14 +218,14 @@ public class KeyManager {
         byte[] IVandEncrypted;
         byte[] decrypted;
         byte[] msg;
-        //if((IVandEncrypted = macHandler.validateMAC(input, getSecretKey(MAC_ALGORITHM))) != null) {
-            if((decrypted = decrypt(input, getSecretKey("AES"))) != null) { //TODO not input but IVandEncrypted
+        if((IVandEncrypted = macHandler.validateMAC(input, getSecretKey(MAC_ALGORITHM))) != null) {
+            if((decrypted = decrypt(IVandEncrypted, getSecretKey("AES"))) != null) {
                 if((msg = authHandler.validateTimestampAndSessionNumber(decrypted, sessionNumber)) != null) { //Incremented the session number
                     //All security requirements validated
                     return msg;
                 }
             }
-        //}
+        }
         //Reject message and connection
         return null;
     }
