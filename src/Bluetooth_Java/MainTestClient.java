@@ -86,16 +86,15 @@ public class MainTestClient{
 
 
             byte[] buffer = new byte[2048];
-            ByteBuffer byteBufferread = ByteBuffer.allocate(2048);
+            ByteBuffer byteBufferRead = ByteBuffer.allocate(8192);
             int bytesRead;
             int totalbytes = 0;
             while((bytesRead = is.read(buffer)) >= 0) {
                 totalbytes += bytesRead;
-                byteBufferread.put(buffer);
+                byteBufferRead.put(buffer, 0, bytesRead);
             }
-
-            byte[] result = new byte[totalbytes];
-            result = byteBufferread.array();
+            System.out.println("asdfasdfasdf" + totalbytes);
+            byte[] result = byteBufferRead.array();
 
             System.out.println("message: " + keyManager.byteArrayToHexString(result));
 
