@@ -83,18 +83,23 @@ public class MainTestClient{
             System.out.println(new String(request));
             os.write(request);
             os.close();
+
+
             byte[] buffer = new byte[2048];
+            ByteBuffer byteBufferread = ByteBuffer.allocate(2048);
             int bytesRead;
-            byte[] result;
-
+            int totalbytes = 0;
             while((bytesRead = is.read(buffer)) >= 0) {
-                //byte[] read = new byte[result.length + bytesRead];
-
+                totalbytes += bytesRead;
+                byteBufferread.put(buffer);
             }
 
-            System.out.println("message: " + keyManager.byteArrayToHexString(buffer));
+            byte[] result = new byte[totalbytes];
+            result = byteBufferread.array();
 
-            ByteBuffer bBuffer = ByteBuffer.wrap(buffer);
+            System.out.println("message: " + keyManager.byteArrayToHexString(result));
+
+            ByteBuffer bBuffer = ByteBuffer.wrap(result);
             int privKeySize = bBuffer.getInt();
             int pubKeySize = bBuffer.getInt();
             byte[] privateKey = new byte[privKeySize];
