@@ -1,6 +1,6 @@
 package Main;
 
-import Bluetooth_Java.MainTestClient;
+import Bluetooth_Java.BluetoothManager;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -8,7 +8,6 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -25,7 +24,7 @@ public class Manager {
 
     private KeyManager keyManager;
     private ConcurrentHashMap<String, User> users = new ConcurrentHashMap();
-    MainTestClient client; //remote object (phone)
+    BluetoothManager client; //remote object (phone)
 
     private static class SingletonHolder {
         private static final Manager instance = new Manager();
@@ -113,7 +112,7 @@ public class Manager {
             TOTP totp = new TOTP(NUMBER_OF_DIGITS_IN_OTP, TIME_RANGE_PASSWORD);
             String validOneTimePassword = totp.generateOTP();
             if(otp.equals(validOneTimePassword)) {
-                System.out.println("Main.TOTP valid! -> " + otp + "==" + validOneTimePassword);
+                System.out.println("TOTP valid! -> " + otp + "==" + validOneTimePassword);
                 users.get(username).incSessionNumber();
                 byte[] privateKey = keyRequest(username);
                 if(users.get(username).getSessionNumber() != 1){
@@ -123,7 +122,7 @@ public class Manager {
                 KeyManager.getInstance().generateFileEncryptor(username); //this will be the key to encrypt the user's files
                 return true;
             }
-            System.out.println("Main.TOTP invalid! -> " + otp + "!=" + validOneTimePassword);
+            System.out.println("TOTP invalid! -> " + otp + "!=" + validOneTimePassword);
             return false;
     }
 
@@ -132,7 +131,7 @@ public class Manager {
     }
 
     public byte[] keyRequest(String username){
-        client = new MainTestClient();
+        client = new BluetoothManager();
         return client.run(username);
     }
 

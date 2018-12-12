@@ -205,14 +205,14 @@ public class KeyManager {
 
         //Encrypt the MAC
         byte[] content = authHandler.addTimestampAndSessionNumber(msg, sessionNumber);
-        /*byte[] IVandEncryptedMsg = encrypt(content, getSecretKey("AES")); //TODO the key need to be reviewed
-        byte[] mac = macHandler.addMAC(IVandEncryptedMsg, getSecretKey(MAC_ALGORITHM));
+        byte[] IVandEncryptedMsg = encrypt(content, getSecretKey("AES"));
+        /*byte[] mac = macHandler.addMAC(IVandEncryptedMsg, getSecretKey(MAC_ALGORITHM));
         //Concatenate encrypted message and mac of message
         byte[] secureMsg = new byte[IVandEncryptedMsg.length + mac.length];
         System.arraycopy(IVandEncryptedMsg, 0, secureMsg, 0, IVandEncryptedMsg.length);
         System.arraycopy(mac, 0, secureMsg, IVandEncryptedMsg.length, mac.length);
         return secureMsg;*/
-        return content;
+        return IVandEncryptedMsg;
     }
 
     //Returns true if message is valid and false otherwise
