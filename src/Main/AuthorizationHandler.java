@@ -15,11 +15,18 @@ public class AuthorizationHandler {
         return byteBuffer.array();
     }
 
+    public byte[] addSessionNumber(byte[] msg, long sessionnr) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(8  + msg.length);
+        byteBuffer.put(msg);
+
+        byteBuffer.putLong(sessionnr);
+
+        return byteBuffer.array();
+    }
+
     //Returns null if invalid
     public byte[] validateTimestamp(byte[] msgtimestamp) {
-
         ByteBuffer byteBuffer = ByteBuffer.wrap(msgtimestamp);
-
         byte[] msg = new byte[msgtimestamp.length-8];
 
         byteBuffer.get(msg);
@@ -28,28 +35,40 @@ public class AuthorizationHandler {
         long currentDate = new Date().getTime();
 
         //intervalo de 1seg pa tras 1 seg pa frente
-        if( ! (timestamp > currentDate-1000 && timestamp < currentDate-1000)){
+        if( !(timestamp > currentDate-1000 && timestamp < currentDate-1000)){
             return null;
         }
         return msg;
     }
 
-    public byte[] addSessionNumber(byte[] msg) {
+    public byte[] validateSessionNumber(byte[] msgSessionNumber, long sessionnr) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(msgSessionNumber);
+        byte[] msg = new byte[msgSessionNumber.length-8];
+
+        byteBuffer.get(msg);
+
+        long timestamp = byteBuffer.getLong();
+        long currentDate = new Date().getTime();
+
+        if( !(timestamp != sessionnr )){
+            return null;
+        }
         return msg;
     }
 
-    public byte[] validateSessionNumber(byte[] msgSessionNumber) {
-        return msgSessionNumber;
+    public byte[] addTimestampAndSessionNumber(byte[] msg, long sessionnr) {
+        return addSessionNumber(addTimestamp(msg),sessionnr);
     }
 
-    public byte[] addTimestampAndSessionNumber(byte[] msg) {
-        return addSessionNumber(addTimestamp(msg));
-    }
+    public byte[] validateTimestampAndSessionNumber(byte[] msgtimesession, long sessionnr) {
+        byte[] msgtime;
+        byte[] msg;
 
-    public byte[] validateTimestampAndSessionNumber(byte[] msg) {
-        byte[] validTimestamp;
-        if((validTimestamp = addTimestamp(msg)) != null)
-            return addSessionNumber(addTimestamp(msg));
+        if((msgtime = validateSessionNumber(msgtimesession, sessionnr)) != null){
+            if((msg = validateTimestamp(msgtime)) != null){
+                return msg;
+            }
+        }
         return null;
     }
 }
