@@ -36,6 +36,7 @@ public class AuthorizationHandler {
 
         //intervalo de 1seg pa tras 1 seg pa frente
         if( !(timestamp > currentDate-1000 && timestamp < currentDate-1000)){
+            System.out.println("timestamp = " + timestamp + " -- currentDate = " + currentDate);
             return null;
         }
         return msg;
@@ -47,10 +48,10 @@ public class AuthorizationHandler {
 
         byteBuffer.get(msg);
 
-        long timestamp = byteBuffer.getLong();
-        long currentDate = new Date().getTime();
+        long sessionNumber = byteBuffer.getLong();
 
-        if( !(timestamp != sessionnr )){
+        if( sessionNumber != sessionnr ){
+            System.out.println("receivedSessionNumber = " + sessionnr + " -- supposedSessionNumber = " + sessionNumber);
             return null;
         }
         return msg;

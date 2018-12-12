@@ -5,6 +5,7 @@ import javax.crypto.SecretKey;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class MACHandler {
     private static final String MAC_ALGORITHM = "HmacSHA256";
@@ -39,19 +40,20 @@ public class MACHandler {
     //Returns null if invalid and msg without the mac in the end
     public byte[] validateMAC(byte[] messageMac, SecretKey key) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(messageMac);
-        byte[] message = new byte[messageMac.length- 256];
+        byte[] IVandEncryptedMsg = new byte[messageMac.length- 256];
         byte[] mac = new byte[256];
 
-        byteBuffer.get(message);
+        byteBuffer.get(IVandEncryptedMsg);
         byteBuffer.get(mac);
 
-        byte[] calculatedMac = getMAC( message, key );
+        byte[] calculatedMac = getMAC( IVandEncryptedMsg, key );
         //TODO podemos comparar 2 arrays desta forma?
-        if(mac != calculatedMac) {
+        if(!Arrays.equals(mac, calculatedMac)) {
+            System.out.println("received = " + mac + " -- calculated = " + calculatedMac);
             return null;
         }
         //return parte inicial da msg sem o mac
-        return message;
+        return IVandEncryptedMsg;
     }
 
 }
