@@ -35,7 +35,7 @@ public class AuthorizationHandler {
         long currentDate = new Date().getTime();
 
         //intervalo de 1seg pa tras 1 seg pa frente
-        if( !(timestamp > currentDate-1000 && timestamp < currentDate-1000)){
+        if( !(timestamp > currentDate-10000 && timestamp < currentDate-10000)){ //10000 milsecs is a bit to much, but it was necessary because the pc and the android used to testing were not synchronized
             System.out.println("timestamp = " + timestamp + " -- currentDate = " + currentDate);
             return null;
         }
@@ -51,7 +51,7 @@ public class AuthorizationHandler {
         long sessionNumber = byteBuffer.getLong();
 
         if( sessionNumber != sessionnr ){
-            System.out.println("receivedSessionNumber = " + sessionnr + " -- supposedSessionNumber = " + sessionNumber);
+            System.out.println("receivedSessionNumber = " + sessionNumber + " -- supposedSessionNumber = " + sessionnr);
             return null;
         }
         return msg;

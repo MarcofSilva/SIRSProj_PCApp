@@ -1,10 +1,14 @@
 package Main;
 
+import com.sun.deploy.uitoolkit.impl.awt.AWTPluginUIToolkit;
+
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
@@ -19,12 +23,21 @@ public class KeyManager {
     private byte[] _fileEncryptor;
     private PrivateKey _privateKey;
 
+
+    private static final String MAC_ALGORITHM = "HmacSHA256";
+
+    private MACHandler macHandler;
+    private AuthorizationHandler authHandler;
+
     private static class SingletonHolder {
         private static final KeyManager instance = new KeyManager();
     }
 
     private KeyManager() {
         _secretKey = null;
+        macHandler = new MACHandler();
+        authHandler = new AuthorizationHandler();
+
     }
 
     public static synchronized KeyManager getInstance() {
@@ -183,6 +196,84 @@ public class KeyManager {
         } catch (InvalidKeySpecException ike){
             ike.printStackTrace();
         }
+    }
+
+    //Prepare the message to send with all the security procedures necessary for the context
+    public byte[] prepareMessageToSend(long sessionNumber) throws Exception {
+        ByteBuffer byteBuffer;
+        byte[] msg = new byte[0];
+        //Apply the security procedures
+        //TODO
+
+        //Encrypt the MAC
+        byte[] content = authHandler.addTimestampAndSessionNumber(msg, sessionNumber);
+        /*byte[] IVandEncryptedMsg = encrypt(content, getSecretKey("AES")); //TODO the key need to be reviewed
+        byte[] mac = macHandler.addMAC(IVandEncryptedMsg, getSecretKey(MAC_ALGORITHM));
+        //Concatenate encrypted message and mac of message
+        byte[] secureMsg = new byte[IVandEncryptedMsg.length + mac.length];
+        System.arraycopy(IVandEncryptedMsg, 0, secureMsg, 0, IVandEncryptedMsg.length);
+        System.arraycopy(mac, 0, secureMsg, IVandEncryptedMsg.length, mac.length);
+        return secureMsg;*/
+        return content;
+    }
+
+    //Returns true if message is valid and false otherwise
+    public boolean validateMessageReceived(byte[] input, long sessionNumber) throws Exception {
+        byte[] IVandEncrypted;
+        byte[] decrypted;
+        byte[] msg;
+        //if((IVandEncrypted = macHandler.validateMAC(input, getSecretKey(MAC_ALGORITHM))) != null) {
+            //if((decrypted = decrypt(IVandEncrypted, getSecretKey("AES"))) != null) { //TODO the key need to be reviewed
+                if((msg = authHandler.validateTimestampAndSessionNumber(input, sessionNumber)) != null) { //Incremented the session number TODO input e na verdade decrypt
+                    //All security requirements validated
+                    return true;
+                }
+        //    }
+        //}
+        //Reject message and connection
+        //return false;
+        return false; //TODO isto tem de ser false...so para debug
+    }
+
+    public byte[] encrypt(byte[] array, SecretKey secretKey) throws Exception {
+        // Generate IV.
+        int ivSize = 16;
+        byte[] iv = generateSecret(ivSize);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+
+        // Encrypt.
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+        byte[] encrypted = cipher.doFinal(array);
+
+        // Concatenate IV and encrypted part.
+        byte[] IVandEncryptedMsg = new byte[ivSize + encrypted.length];
+        System.arraycopy(iv, 0, IVandEncryptedMsg, 0, ivSize);
+        System.arraycopy(encrypted, 0, IVandEncryptedMsg, ivSize, encrypted.length);
+
+        return IVandEncryptedMsg;
+    }
+
+    public byte[] decrypt(byte[] IVandEncryptedMsg, SecretKey secretKey) throws Exception {
+        int ivSize = 16;
+        int keySize = 16;
+
+        // Extract IV.
+        byte[] iv = new byte[ivSize];
+        System.arraycopy(IVandEncryptedMsg, 0, iv, 0, iv.length);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+
+        // Extract encrypted part.
+        int encryptedSize = IVandEncryptedMsg.length - ivSize;
+        byte[] encryptedBytes = new byte[encryptedSize];
+        System.arraycopy(IVandEncryptedMsg, ivSize, encryptedBytes, 0, encryptedSize);
+
+        // Decrypt.
+        Cipher cipherDecrypt = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipherDecrypt.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+        byte[] decrypted = cipherDecrypt.doFinal(encryptedBytes);
+
+        return decrypted;
     }
 
     //Base64 Encoder and Decoder don't work for Android with API < 26 and the android used for testing with the lowest API version has API 23

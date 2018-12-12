@@ -69,65 +69,56 @@ public class MainTestClient{
         }
     }
 
-    private void manageConnection(StreamConnection connection, String username){
+    private void manageConnection(StreamConnection connection, String username) {
         try {
             InputStream is = connection.openInputStream();
             OutputStream os = connection.openOutputStream();
+            long sessionNum = Manager.getInstance().getUser(username).getSessionNumber();
 
-            //TODO for testing
-            /*byte[] intbytes = new byte[8];
-            ByteBuffer.wrap(intbytes).putLong(Manager.getInstance().getUser(username).getSessionNumber());*/ //TODO
-            ByteBuffer byteBuffer = ByteBuffer.allocate(8);
-            byteBuffer.putLong(Manager.getInstance().getUser(username).getSessionNumber());
-            byte[] request = byteBuffer.array();
-            System.out.println(new String(request));
+            byte[] request = keyManager.prepareMessageToSend(sessionNum);
+            System.out.println("pedido feito : " + keyManager.byteArrayToHexString(request));
             os.write(request);
             os.close();
 
 
             byte[] buffer = new byte[2048];
+
             ByteBuffer byteBufferRead = ByteBuffer.allocate(8192);
             int bytesRead;
-            int totalbytes = 0;
-            while((bytesRead = is.read(buffer)) >= 0) {
-                totalbytes += bytesRead;
+            int totalBytes = 0;
+            while ((bytesRead = is.read(buffer)) >= 0) {
+                totalBytes += bytesRead;
                 byteBufferRead.put(buffer, 0, bytesRead);
             }
-            System.out.println("asdfasdfasdf" + totalbytes);
             byte[] result = byteBufferRead.array();
 
-            System.out.println("message: " + keyManager.byteArrayToHexString(result));
+            byte[] received = new byte[totalBytes];
+            ByteBuffer byteBuffer = ByteBuffer.wrap(result);
+            byteBuffer.get(received, 0, totalBytes);
+            System.out.println("message received: " + keyManager.byteArrayToHexString(received));
 
-            ByteBuffer bBuffer = ByteBuffer.wrap(result);
-            int privKeySize = bBuffer.getInt();
-            int pubKeySize = bBuffer.getInt();
-            byte[] privateKey = new byte[privKeySize];
-            byte[] publicKey = new byte[pubKeySize];
-            bBuffer.get(privateKey);
-            bBuffer.get(publicKey);
+            if (keyManager.validateMessageReceived(received, sessionNum)) {
+                ByteBuffer bBuffer = ByteBuffer.wrap(received);
+                int privKeySize = bBuffer.getInt();
+                int pubKeySize = bBuffer.getInt();
+                byte[] privateKey = new byte[privKeySize];
+                byte[] publicKey = new byte[pubKeySize];
+                bBuffer.get(privateKey);
+                bBuffer.get(publicKey);
 
-            System.out.println("privateKey: " + keyManager.byteArrayToHexString(privateKey) + "publicKey: " + keyManager.byteArrayToHexString(publicKey));
+                System.out.println("privateKey: " + keyManager.byteArrayToHexString(privateKey) + "publicKey: " + keyManager.byteArrayToHexString(publicKey));
 
-            /*byte[] privateKey = copyOfRange(buffer, 8, privKeySize + 8); //from: inclusive, to: exclusive
-            byte[] publicKey = copyOfRange(buffer, 8 + privKeySize, 8 + privKeySize + pubKeySize);
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();*/
-            Manager.getInstance().storePublicKey(publicKey);
-            if(privKeySize != 0)
-                Manager.getInstance().storePrivateKey(privateKey);
+                Manager.getInstance().storePublicKey(publicKey);
+                if (privKeySize != 0)
+                    Manager.getInstance().storePrivateKey(privateKey);
+            }
+            else {
+                System.out.println("not valid!!!!!!!!");
+            }
 
-            //
-
-            securityManagment(os);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void securityManagment(OutputStream os) {
-        //TODO
+        } //TODO
     }
 
     public void closeConnection(){
