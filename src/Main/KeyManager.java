@@ -216,21 +216,20 @@ public class KeyManager {
     }
 
     //Returns true if message is valid and false otherwise
-    public boolean validateMessageReceived(byte[] input, long sessionNumber) throws Exception {
+    public byte[] validateMessageReceived(byte[] input, long sessionNumber) throws Exception {
         byte[] IVandEncrypted;
         byte[] decrypted;
         byte[] msg;
         //if((IVandEncrypted = macHandler.validateMAC(input, getSecretKey(MAC_ALGORITHM))) != null) {
-            //if((decrypted = decrypt(IVandEncrypted, getSecretKey("AES"))) != null) { //TODO the key need to be reviewed
-                if((msg = authHandler.validateTimestampAndSessionNumber(input, sessionNumber)) != null) { //Incremented the session number TODO input e na verdade decrypt
+            if((decrypted = decrypt(input, getSecretKey("AES"))) != null) { //TODO not input but IVandEncrypted
+                if((msg = authHandler.validateTimestampAndSessionNumber(decrypted, sessionNumber)) != null) { //Incremented the session number
                     //All security requirements validated
-                    return true;
+                    return msg;
                 }
-        //    }
+            }
         //}
         //Reject message and connection
-        //return false;
-        return false; //TODO isto tem de ser false...so para debug
+        return null;
     }
 
     public byte[] encrypt(byte[] array, SecretKey secretKey) throws Exception {
