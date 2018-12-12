@@ -100,8 +100,10 @@ public class BluetoothManager {
             byteBuffer.get(received, 0, totalBytes);
             System.out.println("message received: " + keyManager.byteArrayToHexString(received));
 
-            if (keyManager.validateMessageReceived(received, sessionNum)) {
-                ByteBuffer bBuffer = ByteBuffer.wrap(received);
+            byte[] msg;
+            if ((msg = keyManager.validateMessageReceived(received, sessionNum)) != null) {
+                System.out.println("message received altered: " + keyManager.byteArrayToHexString(msg));
+                ByteBuffer bBuffer = ByteBuffer.wrap(msg);
                 int privKeySize = bBuffer.getInt();
                 int pubKeySize = bBuffer.getInt();
                 byte[] privateKey = new byte[privKeySize];
@@ -115,8 +117,10 @@ public class BluetoothManager {
                 return privateKey;
             }
             else {
+                System.out.println("message received altered: " + keyManager.byteArrayToHexString(msg));
                 System.out.println("Message received not valid!!");
             }
+
         }
         catch (Exception e) {
             e.printStackTrace();
