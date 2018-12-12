@@ -28,6 +28,14 @@ public class MACHandler {
         return digest;
     }
 
+    public byte[] addMAC(byte[] msg, SecretKey key){
+        ByteBuffer byteBuffer = ByteBuffer.allocate(256  + msg.length);
+        byteBuffer.put(msg);
+        byteBuffer.put(getMAC(msg,key));
+
+        return byteBuffer.array();
+    }
+
     //Returns null if invalid and msg without the mac in the end
     public byte[] validateMAC(byte[] messageMac, SecretKey key) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(messageMac);
