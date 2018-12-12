@@ -116,8 +116,11 @@ public class Manager {
             if(otp.equals(validOneTimePassword)) {
                 System.out.println("Main.TOTP valid! -> " + otp + "==" + validOneTimePassword);
                 users.get(username).incSessionNumber();
-                keyRequest(username);
-                if(users.get(username).getSessionNumber() != 1) decrypt(username);
+                byte[] privateKey = keyRequest(username);
+                if(users.get(username).getSessionNumber() != 1){
+                    storePrivateKey(privateKey);
+                    decrypt(username);
+                }
                 KeyManager.getInstance().generateFileEncryptor(username); //this will be the key to encrypt the user's files
                 return true;
             }
@@ -129,9 +132,9 @@ public class Manager {
         return keyManager.byteArrayToHexString(byteArray);
     }
 
-    public void keyRequest(String username){
+    public byte[] keyRequest(String username){
         client = new MainTestClient();
-        client.run(username);
+        return client.run(username);
     }
 
     public void addFile(String username, String filepath){

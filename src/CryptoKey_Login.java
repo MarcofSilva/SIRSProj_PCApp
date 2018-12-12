@@ -21,7 +21,7 @@ public class CryptoKey_Login {
             public void actionPerformed(ActionEvent e) {
                 int login = Manager.getInstance().userCheck(usernameField.getText(), new String(passwordField.getPassword()));
                 System.out.println(login);
-                if(login == 1){ //logged in
+                if(login == 1 && Manager.getInstance().getUser(usernameField.getText()).getSessionNumber() % 5 != 0){ //logged in
                     CryptoKey_TOTP totpScreen = new CryptoKey_TOTP(frame, usernameField.getText());
                     frame.setContentPane(totpScreen.getPanel());
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,7 +30,7 @@ public class CryptoKey_Login {
                     frame.setVisible(true);
 
                 }
-                else if(login == 0){ //registered & logged in
+                else if(login == 0 || Manager.getInstance().getUser(usernameField.getText()).getSessionNumber() % 5 == 0){ //registered & logged in
                     CryptoKey_QRCode qrcodeScreen = new CryptoKey_QRCode(frame, usernameField.getText());
                     frame.setContentPane(qrcodeScreen.getPanel());
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

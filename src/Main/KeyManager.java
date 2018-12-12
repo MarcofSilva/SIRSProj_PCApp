@@ -129,12 +129,11 @@ public class KeyManager {
             _fileEncryptor = generateSecret(16); //TODO key should not be byte[]
     }
 
-    private SecretKeySpec decryptFileDecryptor(String username){
+    private void decryptFileDecryptor(String username){
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, _privateKey);
-            byte[] encryptor = cipher.doFinal(_fileEncryptor);
-            return new SecretKeySpec(encryptor, "AES");
+            _fileEncryptor = cipher.doFinal(_fileEncryptor);
         } catch (NoSuchAlgorithmException nsa) {
             nsa.printStackTrace();
         } catch (NoSuchPaddingException nsp) {
@@ -146,7 +145,6 @@ public class KeyManager {
         } catch (BadPaddingException bpe) {
             bpe.printStackTrace();
         }
-        return null;
     }
 
     private void encryptFileDecryptor(){
