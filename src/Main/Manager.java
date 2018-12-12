@@ -10,11 +10,12 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.crypto.SecretKey;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.security.MessageDigest;
+
 
 public class Manager {
 
@@ -46,13 +47,23 @@ public class Manager {
     }
 
     public int userCheck(String username, String password){
+
         if (username != null && password != null) {
-            if (users.containsKey(username) && users.get(username).get_password().equals(password)){
+            MessageDigest messageDigest = null;
+            try {
+                messageDigest = MessageDigest.getInstance("SHA-256");
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+            messageDigest.update(password.getBytes());
+            String hashedPass = new String(messageDigest.digest());
+
+            if (users.containsKey(username) && users.get(username).get_password().equals(hashedPass)){
                 users.get(username).set_isLoggedIn(true);
                 return 1;
             }
             else {
-                User user = new User(username, password);
+                User user = new User(username, hashedPass);
                 users.put(username, user);
                 users.get(username).set_isLoggedIn(true);
                 return 0;
@@ -143,20 +154,6 @@ public class Manager {
         KeyManager.getInstance().decrypt((username));
     }
 
-    public void persistentshit(){
-        for(User u : users.values()){
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(u.get_username()));
-                writer.write(u.get_password());
-
-                writer.close();
-            }
-            catch (IOException e ){
-
-            }
-        }
-
-    }
 }
 
 
