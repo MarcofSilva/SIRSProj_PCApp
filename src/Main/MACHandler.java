@@ -48,7 +48,7 @@ public class MACHandler {
         byte[] calculatedMac = getMAC( IVandEncryptedMsg, key );
         if(!Arrays.equals(mac, calculatedMac)) {
             System.out.println("Error, MAC validation failed. Corrupedted message");
-            System.out.println("Mac received = " + KeyManager.getInstance().byteArrayToHexString(mac) + " -- Mac calculated = " + KeyManager.getInstance().byteArrayToHexString(calculatedMac));
+            System.out.println("MAC received = " + KeyManager.getInstance().byteArrayToHexString(mac) + " -- MAC calculated = " + KeyManager.getInstance().byteArrayToHexString(calculatedMac));
             return null;
         }
         System.out.println("MAC validated");

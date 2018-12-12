@@ -40,7 +40,7 @@ public class AuthorizationHandler {
         //With synchronized systems the interval would need to be small to guarantee freshness
         if( !(timestamp > currentDate-10000 && timestamp < currentDate+10000)){
             System.out.println("Error validating TimeStamps");
-            System.out.println("TimeStamp Received(ms) = " + timestamp + " -- CurrentTimeStamp(ms) = " + currentDate);
+            System.out.println("TimeStamp Received(ms) = " + timestamp + " -- Current TimeStamp(ms) = " + currentDate);
             return null;
         }
         System.out.println("Time Stamp validated");

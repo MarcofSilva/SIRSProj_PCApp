@@ -91,7 +91,6 @@ public class KeyManager {
                     //fos.close(); No need to close fos because the instance was created inside a try. This will automatically close the OutputStream
                 }
                 String s = new String(decrypted);
-                System.out.println("decrypted :" + s);
             } catch (NoSuchAlgorithmException nsa) {
                 nsa.printStackTrace();
             } catch (NoSuchPaddingException nsp) {
