@@ -39,7 +39,7 @@ public class CryptoKey_Login {
                     frame.setVisible(true);
                 }
                 else{
-                    System.out.println("Erro a registar utilizador");
+                    System.out.println("Error registring user");
                 }
 
 

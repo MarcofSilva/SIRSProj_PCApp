@@ -47,12 +47,11 @@ public class MACHandler {
         byteBuffer.get(mac);
 
         byte[] calculatedMac = getMAC( IVandEncryptedMsg, key );
-        //TODO podemos comparar 2 arrays desta forma?
         if(!Arrays.equals(mac, calculatedMac)) {
             System.out.println("received = " + mac + " -- calculated = " + calculatedMac);
             return null;
         }
-        //return parte inicial da msg sem o mac
+        //returns msg without mac
         return IVandEncryptedMsg;
     }
 

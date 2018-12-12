@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class User {
     private String _username;
-    private String _password; //TODO password shouldn't be stored this way
+    private String _password; //this password is the hash of the real one
     private boolean _isLoggedIn = false;
     private long sessionNumber = 0;
 

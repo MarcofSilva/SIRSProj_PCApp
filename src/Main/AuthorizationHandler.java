@@ -34,8 +34,11 @@ public class AuthorizationHandler {
         long timestamp = byteBuffer.getLong();
         long currentDate = new Date().getTime();
 
-        //intervalo de 1seg pa tras 1 seg pa frente
-        if( !(timestamp > currentDate-10000 && timestamp < currentDate+10000)){ //10000 milsecs is a bit to much, but it was necessary because the pc and the android used to testing were not synchronized
+        //20000 interval is to much.
+        //It is like that because our computer clocks and smartphone clocks were not in sync
+        //So we need it to be a big interval so we can test it and demonstrate it
+        //With synchronized systems the interval would need to be small to guarantee freshness
+        if( !(timestamp > currentDate-10000 && timestamp < currentDate+10000)){
             System.out.println("timestamp = " + timestamp + " -- currentDate = " + currentDate);
             return null;
         }

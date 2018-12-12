@@ -17,17 +17,17 @@ public class CryptoKey_Home {
 
     public CryptoKey_Home(JFrame frame, String username) {
         _frame = frame;
-        panelMain = new JPanel();//getPanel();
+        panelMain = new JPanel();
         listModel = new DefaultListModel<>();
         List<String> userFiles = Manager.getInstance().askFiles(username);
         for (String file : userFiles) {
             listModel.addElement(file);
         }
-        filesList = new JList(listModel); //data has type Object[]
+        filesList = new JList(listModel);
         filesList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         filesList.setLayoutOrientation(JList.VERTICAL);
         filesList.setVisible(true);
-        panelMain.add(filesList); // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+        panelMain.add(filesList);
 
         logOutButton = new JButton("Log out");
         chooseFilesButton = new JButton("Choose File");

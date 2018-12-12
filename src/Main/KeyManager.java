@@ -56,7 +56,7 @@ public class KeyManager {
                 byte[] encrypted = cipher.doFinal(Files.readAllBytes(f.toPath()));
                 try (FileOutputStream fos = new FileOutputStream(filepath)) {
                     fos.write(encrypted);
-                    //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
+                    //fos.close(); No need to close fos because the instance was created inside a try. This will automatically close the OutputStream
                 }
             } catch(NoSuchAlgorithmException nsa){
                 nsa.printStackTrace();
@@ -87,7 +87,7 @@ public class KeyManager {
                 byte[] decrypted = cipher.doFinal(Files.readAllBytes(f.toPath()));
                 try (FileOutputStream fos = new FileOutputStream(filepath)) {
                     fos.write(decrypted);
-                    //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
+                    //fos.close(); No need to close fos because the instance was created inside a try. This will automatically close the OutputStream
                 }
                 String s = new String(decrypted);
                 System.out.println("decrypted :" + s);

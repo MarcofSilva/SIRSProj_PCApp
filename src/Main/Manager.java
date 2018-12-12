@@ -24,7 +24,7 @@ public class Manager {
     private static final int TIME_RANGE_PASSWORD = 20; //For how long is a one time password valid until a new gets
 
     private KeyManager keyManager;
-    private ConcurrentHashMap<String, User> users = new ConcurrentHashMap(); //prob doesnt need concurrent
+    private ConcurrentHashMap<String, User> users = new ConcurrentHashMap();
     MainTestClient client; //remote object (phone)
 
     private static class SingletonHolder {
@@ -102,7 +102,6 @@ public class Manager {
     public byte[] generateQRcode(String text, int width, int height)throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-    //    BufferedImage image = new BufferedImage(height, width, BufferedImage.TYPE_INT_RGB);
 
         ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
