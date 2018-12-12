@@ -33,4 +33,23 @@ public class AuthorizationHandler {
         }
         return msg;
     }
+
+    public byte[] addSessionNumber(byte[] msg) {
+        return msg;
+    }
+
+    public byte[] validateSessionNumber(byte[] msgSessionNumber) {
+        return msgSessionNumber;
+    }
+
+    public byte[] addTimestampAndSessionNumber(byte[] msg) {
+        return addSessionNumber(addTimestamp(msg));
+    }
+
+    public byte[] validateTimestampAndSessionNumber(byte[] msg) {
+        byte[] validTimestamp;
+        if((validTimestamp = addTimestamp(msg)) != null)
+            return addSessionNumber(addTimestamp(msg));
+        return null;
+    }
 }
