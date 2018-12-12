@@ -35,7 +35,7 @@ public class AuthorizationHandler {
         long currentDate = new Date().getTime();
 
         //intervalo de 1seg pa tras 1 seg pa frente
-        if( !(timestamp > currentDate-10000 && timestamp < currentDate-10000)){ //10000 milsecs is a bit to much, but it was necessary because the pc and the android used to testing were not synchronized
+        if( !(timestamp > currentDate-10000 && timestamp < currentDate+10000)){ //10000 milsecs is a bit to much, but it was necessary because the pc and the android used to testing were not synchronized
             System.out.println("timestamp = " + timestamp + " -- currentDate = " + currentDate);
             return null;
         }
