@@ -18,6 +18,7 @@ public class MACHandler {
             mac = Mac.getInstance(MAC_ALGORITHM);
             mac.init(key);
             digest = mac.doFinal(message);
+            System.out.println("Calculated mac = " + KeyManager.getInstance().byteArrayToHexString(digest) );
 
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -30,9 +31,10 @@ public class MACHandler {
     }
 
     public byte[] addMAC(byte[] msg, SecretKey key){
-        ByteBuffer byteBuffer = ByteBuffer.allocate(256  + msg.length);
+        byte[] mac = getMAC(msg,key);
+        ByteBuffer byteBuffer = ByteBuffer.allocate(32  + msg.length);
         byteBuffer.put(msg);
-        byteBuffer.put(getMAC(msg,key));
+        byteBuffer.put(mac);
 
         return byteBuffer.array();
     }
@@ -40,8 +42,8 @@ public class MACHandler {
     //Returns null if invalid and msg without the mac in the end
     public byte[] validateMAC(byte[] messageMac, SecretKey key) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(messageMac);
-        byte[] IVandEncryptedMsg = new byte[messageMac.length- 256];
-        byte[] mac = new byte[256];
+        byte[] IVandEncryptedMsg = new byte[messageMac.length- 32];
+        byte[] mac = new byte[32];
 
         byteBuffer.get(IVandEncryptedMsg);
         byteBuffer.get(mac);
