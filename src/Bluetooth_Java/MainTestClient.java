@@ -27,6 +27,7 @@ public class MainTestClient{
     private DiscoveryAgent discoveryAgent;
     private StreamConnection connection;
     private String connectionURL;
+    private int numServices = 0;
 
     private KeyManager keyManager = KeyManager.getInstance();
 
@@ -51,7 +52,7 @@ public class MainTestClient{
         }
     }
 
-    public void run(String username) {
+    public byte[] run(String username) {
         // search the paired devices list for the android smartphone used for testing the system
         RemoteDevice pairedDevice = discoveryAgent.retrieveDevices(DiscoveryAgent.PREKNOWN)[0];
         try {
@@ -63,13 +64,14 @@ public class MainTestClient{
             }
             //After founding the service of the android app get the conector and start the communication management
             connection = (StreamConnection)Connector.open(connectionURL);
-            manageConnection(connection, username);
+            return manageConnection(connection, username);
         } catch (Exception e) {
             //TODO
         }
+        return null;
     }
 
-    private void manageConnection(StreamConnection connection, String username){
+    private byte[] manageConnection(StreamConnection connection, String username){
         try {
             InputStream is = connection.openInputStream();
             OutputStream os = connection.openOutputStream();
@@ -114,16 +116,14 @@ public class MainTestClient{
             keyPairGenerator.initialize(2048);
             KeyPair keyPair = keyPairGenerator.generateKeyPair();*/
             Manager.getInstance().storePublicKey(publicKey);
-            if(privKeySize != 0)
-                Manager.getInstance().storePrivateKey(privateKey);
-
-            //
-
             securityManagment(os);
+            return privateKey;
+            //if(privKeySize != 0) Manager.getInstance().storePrivateKey(privateKey);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private void securityManagment(OutputStream os) {
@@ -148,12 +148,21 @@ public class MainTestClient{
         }
 
         public void serviceSearchCompleted(int transID, int respCode) {
+            if(numServices == 0) {
+                RemoteDevice pairedDevice = discoveryAgent.retrieveDevices(DiscoveryAgent.PREKNOWN)[0];
+                try {
+                    discoveryAgent.searchServices(null, uuidSet, pairedDevice, new MyDiscoveryListener());
+                } catch (BluetoothStateException e) {
+                    e.printStackTrace();
+                }
+            }
             System.out.println("Service Search completed!");
         }
 
         public void servicesDiscovered(int arg0, ServiceRecord[] services) {
             //We are expecting that only one service exist in the paired device
             for (int i = 0; i < services.length; i++) {
+                numServices++;
                 connectionURL = services[i].getConnectionURL(ServiceRecord.NOAUTHENTICATE_NOENCRYPT, false);
                 if (connectionURL == null) {
                     continue;
